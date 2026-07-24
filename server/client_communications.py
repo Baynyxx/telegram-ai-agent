@@ -41,3 +41,14 @@ async def power(link: str):
     except Exception as e:
         print(e)
         return("Error")
+
+async def ratio(link: str):
+    message = f"{CONNECTION_TOKEN}:aspect:{link}"
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect((CONNECTION_IP, CONNECTION_PORT))
+            sock.sendall((message + "\n").encode("utf-8"))
+            return("Ok")
+    except Exception as e:
+        print(e)
+        return("Error")

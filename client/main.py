@@ -1,6 +1,11 @@
 import os
 import socket
 import webbrowser
+import notifications
+import subprocess
+import notifications
+import aspect_ratio
+from programms_list import paths
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -29,42 +34,56 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
         print(f"Подключение от {client_ip}")
 
         with conn:
-            data = b""
+            try:
+                data = b""
 
-            while True:
-                chunk = conn.recv(1024)
+                while True:
+                    chunk = conn.recv(1024)
 
-                if not chunk:
-                    break
+                    if not chunk:
+                        break
 
-                data += chunk
+                    data += chunk
 
-                if b"\n" in data:
-                    break
+                    if b"\n" in data:
+                        break
 
-            message = data.decode("utf-8").strip()
+                message = data.decode("utf-8").strip()
 
-            count = message.count(":")
-            if count == 1:
-                parts = message.split(":", 2)
-                token, command = parts
-            elif count == 2:
-                parts = message.split(":", 2)
-                token, command, value = parts
-            elif count >= 2:
-                parts = message.split(":", 2)
-                token, command, value = parts
-            else:
-                print("error")
+                count = message.count(":")
+                if count == 1:
+                    parts = message.split(":", 2)
+                    token, command = parts
+                elif count == 2:
+                    parts = message.split(":", 2)
+                    token, command, value = parts
+                elif count >= 2:
+                    parts = message.split(":", 2)
+                    token, command, value = parts
+                else:
+                    print("error")
 
-            if command == "url":
-                webbrowser.open(value)
+                if command == "url":
+                    webbrowser.open(value)
+                    notifications.notify("Web", f"Открыто {value}")
+                elif command == "open":
+                    if value in paths:
+                        exec(paths[value])
+                        notifications.notify("Programm", f"Открыто {value}")
+                    else:
+                        notifications.notify("Programm", f"Ошибка при запуске {value}")
+                elif command == "power":
+                    if value == "off":
+                        print("Выключение")
+                    elif value == "reboot":
+                        print("Перезагрузка")
+                elif command == "aspect":
+                    if value == "on":
+                        aspect_ratio.ratio(True)
+                    else:
+                        aspect_ratio.ratio(False)
 
-            elif command == "open":
-                print("Потом допилю")
 
-            elif command == "power":
-                if value == "off":
-                    print("Выключение")
-                elif value == "reboot":
-                    print("Перезагрузка")
+
+            except Exception:
+                pass

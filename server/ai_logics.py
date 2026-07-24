@@ -4,7 +4,6 @@ import ai
 import client_communications
 import telegram_functions
 
-name = config.AGENT_DEFAULT_NAME
 sys = config.SYS_PROMPT
 history = []
 
@@ -23,7 +22,7 @@ async def process_ai_output(text: str):
         if name == "open":
             a = await client_communications.open_programm(value)
             if a != "Error":
-                await telegram_functions.ai_executed(value)
+                await telegram_functions.ai_executed(f"Открыто {value}")
             else:
                 await telegram_functions.ai_executed("Ошибка")
             
@@ -32,6 +31,27 @@ async def process_ai_output(text: str):
             a = await client_communications.power(value)
             if a != "Error":
                 await telegram_functions.ai_executed(value)
+            else:
+                await telegram_functions.ai_executed("Ошибка")
+
+        if name == "aspect":
+            a = await client_communications.ratio(value)
+            if a != "Error":
+                await telegram_functions.ai_executed("Разрешение применено")
+            else:
+                await telegram_functions.ai_executed("Ошибка")
+
+        if name == "remember":
+            a = await ai.remember(value)
+            if a != "Error":
+                await telegram_functions.ai_executed(f"Бот запомнил: {value}")
+            else:
+                await telegram_functions.ai_executed("Ошибка")
+
+        if name == "forget":
+            a = await ai.forget(value)
+            if a != "Error":
+                await telegram_functions.ai_executed(f"Бот забыл: {value}")
             else:
                 await telegram_functions.ai_executed("Ошибка")
 

@@ -5,7 +5,7 @@ import buttons
 import ai_logics
 from dotenv import load_dotenv
 load_dotenv()
-
+from ai import memory
 from telegram import Update, InlineQueryResultArticle, InlineKeyboardButton, InlineKeyboardMarkup, InputTextMessageContent, ReplyKeyboardMarkup
 from telegram.ext import Application, CommandHandler, InlineQueryHandler, ContextTypes, CallbackQueryHandler, MessageHandler, filters
 from telegram.constants import ParseMode
@@ -80,8 +80,12 @@ async def text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         keyboard = await buttons.settings()
         await send_tg(f"Настройки:", reply_markup=keyboard)
 
-    elif user_text == "Сменить имя агента":
-        await send_tg(f"В разработке. Вы можете изменить имя через конфиг.")
+    elif user_text == "Воспоминания бота":
+        memory_text = "\n".join(
+            f"• {fact}"
+            for fact in memory
+        )
+        await send_tg(memory_text)
 
     elif user_text == "Назад":
         keyboard = await buttons.main_menu()

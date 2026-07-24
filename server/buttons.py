@@ -4,19 +4,7 @@ from telegram.constants import ParseMode
 
 async def main_menu():
     keyboard = [
-        ["Настройки"]
-    ]
-    
-    reply_markup = ReplyKeyboardMarkup(
-        keyboard,
-        resize_keyboard=True
-    )
-    return reply_markup
-
-async def settings():
-    keyboard = [
-        ["Сменить имя агента"],
-        ["Назад"]
+        ["Воспоминания бота"]
     ]
     
     reply_markup = ReplyKeyboardMarkup(
