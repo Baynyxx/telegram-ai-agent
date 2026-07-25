@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
-from html import escape
 
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
