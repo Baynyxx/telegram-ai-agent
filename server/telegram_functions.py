@@ -1,3 +1,4 @@
+import asyncio
 import os
 import config
 import buttons
@@ -5,7 +6,7 @@ import ai_logics
 from dotenv import load_dotenv
 load_dotenv()
 from ai import memory
-from telegram import Update
+from telegram import Update, constants
 from telegram.ext import ContextTypes
 
 OWNER_ID = os.getenv("OWNER_ID")
@@ -27,6 +28,21 @@ async def ai_executed(text: str):
         await send_tg(f"✅ {text}")
     else:
         await send_tg(f"⛔ {text}")
+
+async def edit_devide(text: str):
+    count = text.count("|||")
+    if count > 0:
+        parts = text.split("|||")
+        for i, part in enumerate(parts):
+            await texting()
+            if i == 0:
+                await send_tg(part)
+                await asyncio.sleep(1)
+            else:
+                await send_tg(part)
+                await asyncio.sleep(1)
+    else:
+        await send_tg(text)
 
 
 async def send_tg(text: str, reply_markup=None, parse_mode="HTML"):
@@ -59,6 +75,11 @@ async def edit_tg(text: str, id: int, reply_markup=None, parse_mode="HTML"):
     except Exception as e:
         print("Telegram error:", e)
 
+async def texting():
+    await app.bot.send_chat_action(
+    chat_id=OWNER_ID, 
+    action=constants.ChatAction.TYPING
+)
 
 # User commands
 
@@ -93,12 +114,11 @@ async def text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     else:
-        gen_mess = await send_tg(f"🔄 Думаю")
-
+        await texting()
         if message.reply_to_message:
             original_message = message.reply_to_message
             ans = await ai_logics.ask(user_text, reply=original_message.text)
         else:
             ans = await ai_logics.ask(user_text)
-        await edit_tg(ans, gen_mess)
+        await edit_devide(ans)
         

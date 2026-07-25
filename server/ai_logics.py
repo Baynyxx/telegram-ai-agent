@@ -79,14 +79,17 @@ async def process_ai_output(text: str):
                 else:
                     await telegram_functions.ai_executed("Ошибка")
                     
-
         text = text.replace(
             f"[{name}:{value}]",
             "",
             1
         )
+    
+    
+
+    
     if text == "" or text == " ":
-        text = "В этом нет текста."
+        text = "В этом сообщении нет текста."
     
     return text
 
