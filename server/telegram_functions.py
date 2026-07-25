@@ -29,21 +29,22 @@ async def ai_executed(text: str):
         await send_tg(f"⛔ {text}")
 
 
-async def send_tg(text: str, reply_markup=None):
+async def send_tg(text: str, reply_markup=None, parse_mode="HTML"):
     if not text:
         return
     try:
         msg = await app.bot.send_message(
             chat_id=OWNER_ID,
             text=text,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode=parse_mode
         )
         return msg.message_id
     except Exception as e:
         print("Telegram error:", e)
 
 
-async def edit_tg(text: str, id: int, reply_markup=None):
+async def edit_tg(text: str, id: int, reply_markup=None, parse_mode="HTML"):
     if not text:
         return
     try:
@@ -51,7 +52,8 @@ async def edit_tg(text: str, id: int, reply_markup=None):
             chat_id=OWNER_ID,
             message_id=id,
             text=text,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode=parse_mode
         )
         return id
     except Exception as e:
@@ -72,6 +74,7 @@ async def text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     global last_message
     global name_change
+    message = update.message
     user_text = update.message.text
     if user_text == "Настройки":
         keyboard = await buttons.settings()
@@ -91,6 +94,11 @@ async def text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     else:
         gen_mess = await send_tg(f"🔄 Думаю")
-        ans = await ai_logics.ask(user_text)
+
+        if message.reply_to_message:
+            original_message = message.reply_to_message
+            ans = await ai_logics.ask(user_text, reply=original_message.text)
+        else:
+            ans = await ai_logics.ask(user_text)
         await edit_tg(ans, gen_mess)
         

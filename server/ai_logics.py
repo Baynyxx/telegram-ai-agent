@@ -85,13 +85,16 @@ async def process_ai_output(text: str):
             "",
             1
         )
-    if text == "":
-        text = "Ok"
+    if text == "" or text == " ":
+        text = "В этом нет текста."
     
     return text
 
-async def ask(text:str):
-    ans = await ai.ask_gpt(text, history, sys)
+async def ask(text:str, reply=None):
+    if reply != None:
+        ans = await ai.ask_gpt(text, history, sys, reply=reply)
+    else:
+        ans = await ai.ask_gpt(text, history, sys)
     processed = await process_ai_output(ans)
     if processed != "wait":
         return processed

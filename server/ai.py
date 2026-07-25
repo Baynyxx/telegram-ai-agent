@@ -1,18 +1,29 @@
-from openai import OpenAI
-
-from datetime import datetime
-from pathlib import Path
+import asyncio
 import json
 import os
 import config
+from openai import OpenAI
+from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
+from zoneinfo import ZoneInfo
 load_dotenv()
 
 AI_HTTP = os.getenv("AI_HTTP")
 AI_TOKEN = os.getenv("AI_TOKEN")
 
 MEMORY_FILE = Path("memory.json")
+HISTORY_FILE = "chat_history.json"   # имя файла для хранения истории
 
+def load_history():
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_history(history):
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=2)
 
 def load_memory() -> set[str]:
     if not MEMORY_FILE.exists():
@@ -64,21 +75,36 @@ client = OpenAI(
     api_key=AI_TOKEN
 )
 
-async def ask_gpt(message: str, history: list, sys: str):
+async def ask_gpt(message: str, history: list, sys: str, reply=None):
+    moscow_tz = ZoneInfo("Europe/Moscow")
+    now_moscow = datetime.now(moscow_tz)
+    formatted_time = now_moscow.strftime("%Y-%m-%d %H:%M:%S")
+
+    if not history:
+        history.extend(load_history())
+
     now = datetime.now()
-    history.append({
-        "role": "user",
-        "content": f"{message} MESSAGE TIME: {now.strftime("%Y-%m-%d %H:%M:%S")} MEMORIES: {memory}"
-    })
+    if reply is not None:
+        history.append({
+            "role": "user",
+            "content": f"{message} MESSAGE TIME: {formatted_time} MEMORIES: {memory} REPLY TO: {reply}"
+        })
+    else:
+        history.append({
+            "role": "user",
+            "content": f"{message} MESSAGE TIME: {formatted_time} MEMORIES: {memory}"
+        })
 
     messages = [
         {"role": "system", "content": sys},
         *history[-30:],
     ]
 
-    response = client.chat.completions.create(
+    response = await asyncio.to_thread(
+        client.chat.completions.create,
         model="deepseek-chat",
         messages=messages,
+        extra_body={"thinking": False, "search": True},
     )
 
     answer = response.choices[0].message.content
@@ -91,5 +117,6 @@ async def ask_gpt(message: str, history: list, sys: str):
     if len(history) > 30:
         del history[:-30]
 
-    answer = answer.replace("***", "")
+    save_history(history)
+    
     return answer
