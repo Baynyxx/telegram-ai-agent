@@ -1,15 +1,12 @@
 import os
 import config
-import main
 import buttons
 import ai_logics
 from dotenv import load_dotenv
 load_dotenv()
 from ai import memory
-from telegram import Update, InlineQueryResultArticle, InlineKeyboardButton, InlineKeyboardMarkup, InputTextMessageContent, ReplyKeyboardMarkup
-from telegram.ext import Application, CommandHandler, InlineQueryHandler, ContextTypes, CallbackQueryHandler, MessageHandler, filters
-from telegram.constants import ParseMode
-from html import escape
+from telegram import Update
+from telegram.ext import ContextTypes
 
 OWNER_ID = os.getenv("OWNER_ID")
 
