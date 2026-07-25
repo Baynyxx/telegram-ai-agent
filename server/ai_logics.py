@@ -9,6 +9,7 @@ history = []
 
 async def process_ai_output(text: str):
     edited = False
+    si = None
     text = text
     for name, value in re.findall(r"\[([^:]+):([^\]]+)\]", text):
 
@@ -54,6 +55,30 @@ async def process_ai_output(text: str):
                 await telegram_functions.ai_executed(f"Бот забыл: {value}")
             else:
                 await telegram_functions.ai_executed("Ошибка")
+        elif name == "get":
+            if value == "system_info":
+                si = await client_communications.get_system_info()
+                if si != "Error":
+                    if si != "System info error":
+                        await telegram_functions.ai_executed(f"Бот запросил сведения о системе")
+                    else:
+                        await telegram_functions.ai_executed("Ошибка")
+                    rs = await ask(si)
+                    return rs
+                else:
+                    await telegram_functions.ai_executed("Ошибка")
+            if value == "focus":
+                si = await client_communications.get_focus()
+                if si != "Error":
+                    if si != "System focus error":
+                        await telegram_functions.ai_executed(f"Бот запросил фокус")
+                    else:
+                        await telegram_functions.ai_executed("Ошибка")
+                    rs = await ask(si)
+                    return rs
+                else:
+                    await telegram_functions.ai_executed("Ошибка")
+                    
 
         text = text.replace(
             f"[{name}:{value}]",
@@ -65,7 +90,8 @@ async def process_ai_output(text: str):
     
     return text
 
-async def ask(text):
+async def ask(text:str):
     ans = await ai.ask_gpt(text, history, sys)
     processed = await process_ai_output(ans)
-    return processed
+    if processed != "wait":
+        return processed
