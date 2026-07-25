@@ -84,11 +84,15 @@ async def process_ai_output(text: str):
             "",
             1
         )
-    
+        text = text.replace(
+            "\n\n",
+            "|||",
+            1
+        )
     
 
     
-    if text == "" or text == " ":
+    if text == "" or text == " " or text == "   ":
         text = "В этом сообщении нет текста."
     
     return text

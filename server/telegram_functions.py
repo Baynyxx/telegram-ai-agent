@@ -77,9 +77,9 @@ async def edit_tg(text: str, id: int, reply_markup=None, parse_mode="HTML"):
 
 async def texting():
     await app.bot.send_chat_action(
-    chat_id=OWNER_ID, 
-    action=constants.ChatAction.TYPING
-)
+        chat_id=OWNER_ID, 
+        action=constants.ChatAction.TYPING
+    )
 
 # User commands
 
@@ -114,7 +114,6 @@ async def text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     else:
-        await texting()
         if message.reply_to_message:
             original_message = message.reply_to_message
             ans = await ai_logics.ask(user_text, reply=original_message.text)
