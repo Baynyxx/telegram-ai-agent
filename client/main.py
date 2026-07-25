@@ -1,17 +1,13 @@
 import os
 import socket
-import webbrowser
-import notifications
-import subprocess
-import notifications
-import aspect_ratio
-from programms_list import paths
+import do
 from dotenv import load_dotenv
 load_dotenv()
 
 HOST = os.getenv("HOST")
 PORT = int(os.getenv("PORT"))
 ALLOWED_IP = os.getenv("ALLOWED_IP")
+CONNECTION_TOKEN = os.getenv("CONNECTION_TOKEN")
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -63,25 +59,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
                 else:
                     print("error")
 
-                if command == "url":
-                    webbrowser.open(value)
-                    notifications.notify("Web", f"Открыто {value}")
-                elif command == "open":
-                    if value in paths:
-                        exec(paths[value])
-                        notifications.notify("Programm", f"Открыто {value}")
-                    else:
-                        notifications.notify("Programm", f"Ошибка при запуске {value}")
-                elif command == "power":
-                    if value == "off":
-                        print("Выключение")
-                    elif value == "reboot":
-                        print("Перезагрузка")
-                elif command == "aspect":
-                    if value == "on":
-                        aspect_ratio.ratio(True)
-                    else:
-                        aspect_ratio.ratio(False)
+                if token == CONNECTION_TOKEN:
+                   do.action(command, value)
+                else:
+                    print("Неверный токен подключения")
+
+                
 
 
 

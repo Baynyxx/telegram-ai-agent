@@ -1,15 +1,11 @@
 import os
-import config
 import telegram_functions
 from dotenv import load_dotenv
 load_dotenv()
 
-from telegram import Update, InlineQueryResultArticle, InlineKeyboardButton, InlineKeyboardMarkup, InputTextMessageContent, ReplyKeyboardMarkup
-from telegram.ext import Application, CommandHandler, InlineQueryHandler, ContextTypes, CallbackQueryHandler, MessageHandler, filters
-from telegram.constants import ParseMode
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from html import escape
 
-from openai import OpenAI
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 OWNER_ID = os.getenv("OWNER_ID")

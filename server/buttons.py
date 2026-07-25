@@ -1,6 +1,4 @@
-from telegram import Update, InlineQueryResultArticle, InlineKeyboardButton, InlineKeyboardMarkup, InputTextMessageContent, ReplyKeyboardMarkup
-from telegram.ext import Application, CommandHandler, InlineQueryHandler, ContextTypes, CallbackQueryHandler, MessageHandler, filters
-from telegram.constants import ParseMode
+from telegram import ReplyKeyboardMarkup
 
 async def main_menu():
     keyboard = [

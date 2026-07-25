@@ -17,7 +17,8 @@ MEMORY_FILE = Path("memory.json")
 def load_memory() -> set[str]:
     if not MEMORY_FILE.exists():
         return {
-            f"Пользователя зовут {config.USER_NAME}"
+            f"Пользователя зовут {config.USER_NAME}",
+            f"Меня зовут {config.AI_NAME}"
         }
 
     try:
@@ -26,7 +27,8 @@ def load_memory() -> set[str]:
 
     except (json.JSONDecodeError, OSError):
         return {
-            f"Пользователя зовут {config.USER_NAME}"
+            f"Пользователя зовут {config.USER_NAME}",
+            f"Меня зовут {config.AI_NAME}"
         }
 
 
@@ -71,7 +73,7 @@ async def ask_gpt(message: str, history: list, sys: str):
 
     messages = [
         {"role": "system", "content": sys},
-        *history[-20:],
+        *history[-30:],
     ]
 
     response = client.chat.completions.create(
@@ -86,8 +88,8 @@ async def ask_gpt(message: str, history: list, sys: str):
         "content": answer
     })
 
-    if len(history) > 20:
-        del history[:-20]
+    if len(history) > 30:
+        del history[:-30]
 
     answer = answer.replace("***", "")
     return answer
