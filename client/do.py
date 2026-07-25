@@ -11,6 +11,7 @@ import subprocess
 import notifications
 import aspect_ratio
 import keyboard
+import os
 import aspect_ratio_config
 from pynput import keyboard
 from programms_list import paths
@@ -67,8 +68,9 @@ def open_programm(value: str):
     try:
         exec(paths[value])
         notifications.notify("Programm", f"Открыто {value}")    
-    except:
-        notifications.notify("Programm", f"Ошибка при запуске {value}")
+    except Exception as e:
+        print(e)
+        notifications.notify("Programm", f"{e}")
 
 def power(value: str):
     if value == "off":

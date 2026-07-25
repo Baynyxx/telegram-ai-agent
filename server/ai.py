@@ -198,9 +198,9 @@ async def ask2(message: str, history: list, sys: str, reply=None):
         if answer == "":
             del history[-1]
             del history[-1]
-            return "Server error"
+            return "Ошибка"
         else:
             MODE = 1
         return answer
     except Exception:
-        return "Server error"
+        return "Ошибка"
